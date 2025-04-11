@@ -1,16 +1,22 @@
-// ignore_for_file: no_leading_underscores_for_local_identifiers, curly_braces_in_flow_control_structures
+// ignore_for_file: no_leading_underscores_for_local_identifiers, curly_braces_in_flow_control_structures, use_build_context_synchronously
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:task_management/features/data/models/repositories/user_data.dart';
 import 'package:task_management/features/presentation/bloc/authbloc/bloc/authentication_bloc.dart';
 import 'package:task_management/features/presentation/pages/authenticaton/login_screen.dart';
 import 'package:task_management/features/presentation/widgets/Textfields/custom_textfield.dart';
 import 'package:task_management/features/presentation/widgets/elevatedbutton/custom_button.dart';
 import 'package:task_management/features/presentation/widgets/snackbar/snackbar.dart';
 
-class SignupScreen extends StatelessWidget {
+class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
 
+  @override
+  State<SignupScreen> createState() => _SignupScreenState();
+}
+
+class _SignupScreenState extends State<SignupScreen> {
   @override
   Widget build(BuildContext context) {
     final nameController = TextEditingController();
@@ -20,14 +26,19 @@ class SignupScreen extends StatelessWidget {
     final passwordController = TextEditingController();
 
     final _formKey = GlobalKey<FormState>();
+    final height = MediaQuery.of(context).size.height;
+    final width = MediaQuery.of(context).size.width;
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8F0EE),
-      body: BlocListener<AuthenticationBloc,AuthenticationState>(
-        listener:(context, state) {
-          if(state is AuthenticationSuccess && state.source=='signup'){
-
-             ScaffoldMessenger.of(context).showSnackBar(
+      body: BlocListener<AuthenticationBloc, AuthenticationState>(
+        listener: (context, state) async{
+          
+          if (state is AuthenticationSuccess && state.source == 'signup') {
+            await SharedPrefHelper().saveUserEmail(emailController.text);
+            await SharedPrefHelper().saveUserName(nameController.text);
+            await SharedPrefHelper().saveUserphone(phoneController.text);
+            ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
                 content: Text(
                   "Signup Successfully",
@@ -36,8 +47,9 @@ class SignupScreen extends StatelessWidget {
                 backgroundColor: Colors.green,
               ),
             );
-            Navigator.push(context, MaterialPageRoute(builder: (context)=>LoginScreen()));
-          }else if (state is AuthenticationFailure) {
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) =>const LoginScreen()));
+          } else if (state is AuthenticationFailure) {
             showSnackbar(context, state.error);
           }
         },
@@ -45,24 +57,29 @@ class SignupScreen extends StatelessWidget {
           key: _formKey,
           child: SingleChildScrollView(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 50),
+              padding: EdgeInsets.symmetric(
+                horizontal: width * 0.06,
+                vertical: height * 0.06,
+              ),
               child: Column(
                 children: [
-                  const SizedBox(height: 28),
-                  const Text(
+                  SizedBox(height: height * 0.03),
+                  Text(
                     "TO-DO",
                     style: TextStyle(
                       color: Color(0xFFFF6200),
-                      fontSize: 30,
+                      fontSize: width * 0.08,
                       fontWeight: FontWeight.bold,
                       fontStyle: FontStyle.italic,
                       letterSpacing: 1.5,
                     ),
                   ),
-                  const SizedBox(height: 30),
+                  SizedBox(height: height * 0.04),
                   Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 20, vertical: 25),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: width * 0.05,
+                      vertical: height * 0.03,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(16),
@@ -78,24 +95,27 @@ class SignupScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         IconButton(
-                            onPressed: () {}, icon: const Icon(Icons.arrow_back)),
-                        const Row(
+                            onPressed: () {
+                              Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => LoginScreen()));
+                            },
+                            icon: const Icon(Icons.arrow_back)),
+                        Row(
                           children: [
-                            SizedBox(
-                              width: 20,
-                            ),
+                            SizedBox(width: width * 0.05),
                             Text(
                               'Sign UP',
                               style: TextStyle(
-                                  fontSize: 28, fontWeight: FontWeight.bold),
+                                  fontSize: width * 0.07,
+                                  fontWeight: FontWeight.bold),
                             )
                           ],
                         ),
                         Row(
                           children: [
-                            const SizedBox(
-                              width: 20,
-                            ),
+                            SizedBox(width: width * 0.05),
                             const Text("Already have an account?"),
                             TextButton(
                               onPressed: () {
@@ -103,7 +123,7 @@ class SignupScreen extends StatelessWidget {
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) =>
-                                            const SignupScreen()));
+                                            const LoginScreen()));
                               },
                               child: const Text(
                                 'Login',
@@ -116,7 +136,7 @@ class SignupScreen extends StatelessWidget {
                             )
                           ],
                         ),
-                        const SizedBox(height: 20),
+                        SizedBox(height: height * 0.02),
                         CustomTextfield(
                           label: 'Full Name',
                           hintText: 'Full Name',
@@ -131,7 +151,7 @@ class SignupScreen extends StatelessWidget {
                             return null;
                           },
                         ),
-                        const SizedBox(height: 16),
+                        SizedBox(height: height * 0.02),
                         CustomTextfield(
                           label: 'Email',
                           hintText: 'Email',
@@ -146,7 +166,7 @@ class SignupScreen extends StatelessWidget {
                             return null;
                           },
                         ),
-                        const SizedBox(height: 16),
+                        SizedBox(height: height * 0.02),
                         CustomTextfield(
                           label: 'Date of Birth',
                           hintText: 'Select your birth date',
@@ -155,30 +175,30 @@ class SignupScreen extends StatelessWidget {
                             if (value == null || value.isEmpty) {
                               return 'Please select your date of birth';
                             }
-        
+
                             try {
                               // Split and parse the date
                               final parts = value.split('-');
                               if (parts.length != 3)
                                 return 'Enter date in DD-MM-YYYY format';
-        
+
                               final day = int.parse(parts[0]);
                               final month = int.parse(parts[1]);
                               final year = int.parse(parts[2]);
-        
+
                               final selectedDate = DateTime(year, month, day);
                               final now = DateTime.now();
-        
+
                               if (selectedDate.isAfter(now)) {
                                 return 'Date of birth cannot be in the future';
                               }
-        
+
                               final age =
                                   now.difference(selectedDate).inDays ~/ 365;
                               if (age < 18) {
                                 return 'You must be at least 18 years old';
                               }
-        
+
                               return null;
                             } catch (e) {
                               return 'Invalid date format';
@@ -200,7 +220,7 @@ class SignupScreen extends StatelessWidget {
                             }
                           },
                         ),
-                        const SizedBox(height: 16),
+                        SizedBox(height: height * 0.02),
                         CustomTextfield(
                           label: 'Phone Number',
                           hintText: 'Phone Number',
@@ -215,7 +235,7 @@ class SignupScreen extends StatelessWidget {
                             return null;
                           },
                         ),
-                        const SizedBox(height: 16),
+                        SizedBox(height: height * 0.02),
                         CustomTextfield(
                           label: 'Set Password',
                           hintText: 'Set Password',
@@ -230,27 +250,24 @@ class SignupScreen extends StatelessWidget {
                           },
                           obscureText: true,
                         ),
-                        const SizedBox(height: 16),
-                        const SizedBox(height: 20),
+                        SizedBox(height: height * 0.025),
                         Center(
-                          child:CustomElevatedButton(
-                            label: 'Sign Up',
-                            isLoading: context.watch<AuthenticationBloc>().state
-                                is AuthenticationLoading,
-                            onPressed: () {
-                              if (_formKey.currentState!.validate()) {
-                                context.read<AuthenticationBloc>().add(
-                                      SignupRequested(
-                                          name: nameController.text,
-                                          email: emailController.text,
-                                          password: passwordController.text,
-                                          source: 'signup'),
-                                    );
-                              }
-                              
-                            },
-                          )
-                        ),
+                            child: CustomElevatedButton(
+                          label: 'Sign Up',
+                          isLoading: context.watch<AuthenticationBloc>().state
+                              is AuthenticationLoading,
+                          onPressed: () {
+                            if (_formKey.currentState!.validate()) {
+                              context.read<AuthenticationBloc>().add(
+                                    SignupRequested(
+                                        name: nameController.text,
+                                        email: emailController.text,
+                                        password: passwordController.text,
+                                        source: 'signup'),
+                                  );
+                            }
+                          },
+                        )),
                       ],
                     ),
                   ),

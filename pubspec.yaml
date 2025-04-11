@@ -44,6 +44,12 @@ dependencies:
   provider: ^6.1.4
   google_sign_in: ^6.2.2
   email_auth: ^2.0.0
+  custom_line_indicator_bottom_navbar: ^0.0.8
+  toggle_switch: ^2.3.0
+  chips_choice: ^3.0.1
+  shared_preferences: ^2.5.3
+  image_picker: ^1.1.2
+  table_calendar: ^3.2.0
 
 dev_dependencies:
   flutter_test:
