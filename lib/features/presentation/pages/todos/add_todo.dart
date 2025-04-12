@@ -83,14 +83,60 @@ class AddTodo extends StatelessWidget {
                         child: const Icon(Icons.alarm, color: Colors.grey)),
                     const SizedBox(width: 15),
                     GestureDetector(
-                        onTap: () {
-
-                        },
-                        child: const Icon(Icons.flag, color: Colors.grey)),
+                      onTapDown: (details) {
+                        final position = RelativeRect.fromLTRB(
+                          details.globalPosition.dx,
+                          details.globalPosition.dy,
+                          0,
+                          0,
+                        );
+                        showMenu(
+                          context: context,
+                          position: position,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12)),
+                          items: [
+                            PopupMenuItem(
+                              child: Row(
+                                children: const [
+                                  Icon(Icons.warning, color: Colors.redAccent),
+                                  SizedBox(width: 8),
+                                  Text("High Priority",
+                                      style:
+                                          TextStyle(color: Colors.redAccent)),
+                                ],
+                              ),
+                            ),
+                            PopupMenuItem(
+                              child: Row(
+                                children: const [
+                                  Icon(Icons.hourglass_bottom,
+                                      color: Colors.orange),
+                                  SizedBox(width: 8),
+                                  Text("Medium Priority",
+                                      style: TextStyle(color: Colors.orange)),
+                                ],
+                              ),
+                            ),
+                            PopupMenuItem(
+                              child: Row(
+                                children: const [
+                                  Icon(Icons.check_box, color: Colors.green),
+                                  SizedBox(width: 8),
+                                  Text("Low Priority",
+                                      style: TextStyle(color: Colors.green)),
+                                ],
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                      child: const Icon(Icons.flag, color: Colors.grey),
+                    ),
                     const Spacer(),
                     GestureDetector(
                       onTap: () {
-                        
+                           
                       },
                       child: const Icon(Icons.send,
                           color: Color.fromARGB(255, 255, 94, 0)),
@@ -143,7 +189,10 @@ class AddTodo extends StatelessWidget {
                   backgroundColor: Colors.orange,
                   shape: const StadiumBorder(),
                 ),
-                child: const Text('Add New Todo'),
+                child: const Text(
+                  'Add New Todo',
+                  style: TextStyle(color: Colors.white),
+                ),
               ),
             )
           ],
@@ -151,4 +200,5 @@ class AddTodo extends StatelessWidget {
       ),
     );
   }
+  
 }

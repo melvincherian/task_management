@@ -124,11 +124,7 @@ Future<void> logout(BuildContext context) async {
                     children: [
                        CircleAvatar(
                         backgroundColor: Color.fromARGB(255, 255, 210, 207),
-                        child: GestureDetector(
-                          onTap: () {
-                            context.read<ImageBloc>().add(PickImageEvent());
-                          },
-                          child: Icon(Icons.edit, color: const Color.fromARGB(214, 255, 128, 0))),
+                        child: Icon(Icons.edit, color: const Color.fromARGB(214, 255, 128, 0)),
                                              ),
                       const SizedBox(width: 23),
                       const Text(
@@ -193,28 +189,45 @@ Future<void> logout(BuildContext context) async {
                 ),
               ],
             ),
-            const Positioned(
-              top: 155,
-              child: Stack(
-                children: [
-                  CircleAvatar(
-                    radius: 55,
-                    backgroundImage: NetworkImage(
-                      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTAe9NZZk7nUE_anJir2Scf7tsqMHRdEpCbJg&s',
-                    ),
-                  ),
-                  Positioned(
-                    bottom: 0,
-                    right: 0,
-                    child: CircleAvatar(
-                      radius: 16,
-                      backgroundColor: Color.fromARGB(232, 255, 55, 0),
-                      child: Icon(Icons.edit, size: 18, color: Colors.white),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            Positioned(
+  top: 155,
+  child: Stack(
+    children: [
+      GestureDetector(
+        onTap: () {
+          context.read<ImageBloc>().add(PickImageEvent());
+        },
+        child: BlocBuilder<ImageBloc, ImageState>(
+          builder: (context, state) {
+            if (state is ImagePickerSuccess) {
+              return CircleAvatar(
+                radius: 55,
+                backgroundImage: FileImage(state.imageFile),
+              );
+            } else {
+              return const CircleAvatar(
+                radius: 55,
+                backgroundImage: NetworkImage(
+                  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTAe9NZZk7nUE_anJir2Scf7tsqMHRdEpCbJg&s',
+                ),
+              );
+            }
+          },
+        ),
+      ),
+      const Positioned(
+        bottom: 0,
+        right: 0,
+        child: CircleAvatar(
+          radius: 16,
+          backgroundColor: Color.fromARGB(232, 255, 55, 0),
+          child: Icon(Icons.edit, size: 18, color: Colors.white),
+        ),
+      ),
+    ],
+  ),
+),
+
             
           ],
         ),
